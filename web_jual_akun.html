@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Web Jual Akun - Template</title>
+
+    <style>
+      :root {
+        --bg: #f7f7fb;
+        --card: #ffffff;
+        --muted: #6b7280;
+        --accent: #0b84ff;
+      }
+
+      body {
+        font-family: Inter, ui-sans-serif, system-ui, Segoe UI, Roboto, "Helvetica Neue", Arial;
+        background: var(--bg);
+        margin: 0;
+        color: #111;
+      }
+
+      .container {
+        max-width: 1000px;
+        margin: 32px auto;
+        padding: 16px;
+      }
+
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+      }
+
+      h1 {
+        font-size: 20px;
+        margin: 0;
+      }
+
+      .card {
+        background: var(--card);
+        border-radius: 12px;
+        padding: 16px;
+        box-shadow: 0 6px 18px rgba(17, 24, 39, 0.06);
+      }
+
+      form .row {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+
+      input,
+      textarea,
+      select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #e6e9ef;
+        border-radius: 8px;
+        font-size: 14px;
+      }
+
+      textarea {
+        min-height: 70px;
+        resize: vertical;
+      }
+
+      button {
+        background: var(--accent);
+        color: #fff;
+        padding: 10px 14px;
+        border: 0;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+
+      .listings {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 16px;
+        margin-top: 16px;
+      }
+
+      .listing {
+        padding: 14px;
+        border-radius: 12px;
+        background: linear-gradient(180deg, #fff, #fbfdff);
+        border: 1px solid #eef3ff;
+      }
+
+      .price {
+        font-weight: 700;
+        margin-top: 8px;
+      }
+
+      .muted {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .controls {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+      }
+
+      .small {
+        padding: 8px 10px;
+        border-radius: 8px;
+        font-size: 13px;
+      }
+
+      .ghost {
+        background: transparent;
+        border: 1px solid #e6e9ef;
+      }
+
+      footer {
+        margin-top: 20px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      @media (max-width: 520px) {
+        .row {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <header>
+        <h1>Jual Akun Facebook Polosan</h1>
+        <div class="muted">Langsung menuju WhatsApp untuk konfirmasi</div>
+      </header>
+
+      <!-- Pengaturan Penjual -->
+      <section class="card">
+        <h2 style="margin-top:0;font-size:16px">Pengaturan Penjual (Terkunci)</h2>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="font-weight:700">Nomor WhatsApp penjual:</div>
+          <div
+            class="muted"
+            style="padding:8px;background:#fbfdff;border-radius:8px;border:1px solid #eef3ff;max-width:260px"
+          >
+            6282121348660
+          </div>
+          <input id="sellerPhone" type="hidden" value="6282121348660" />
+        </div>
+      </section>
+
+      <!-- Tambah Harga -->
+      <section class="card" style="margin-top:16px">
+        <h2 style="margin-top:0;font-size:16px">Tambah Harga</h2>
+        <form id="addForm" onsubmit="return false;">
+          <div class="row">
+            <input id="name" placeholder="Nama Anda?" required />
+            <input id="price" placeholder="Harga (Rp. 5000)" required />
+          </div>
+
+          <div class="row">
+            <input id="qty" placeholder="Jumlah tersedia (mis. 1, 5, 10)" required />
+          </div>
+
+          <div>
+            <textarea id="desc" placeholder="Deskripsi singkat (mis. kondisi akun, catatan)"></textarea>
+          </div>
+
+          <div style="margin-top:12px;display:flex;gap:8px">
+            <button id="addBtn">Tambahkan Harga</button>
+            <button id="clearBtn" class="Red small" type="button">Bersihkan Semua</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Harga Aktif -->
+      <section id="listSection" class="card" style="margin-top:16px">
+        <h2 style="margin-top:0;font-size:16px">Harga Aktif</h2>
+        <div id="listings" class="listings"></div>
+        <div id="empty" class="muted" style="margin-top:12px">
+          Belum ada Harga. Tambahkan produk di form di atas.
+        </div>
+      </section>
+
+      <footer>
+        <div style="margin-top:6px">Semoga bermanfaat akunnya.</div>
+      </footer>
+    </div>
+
+    <script>
+      // Simple frontend store + WhatsApp link creator
+      const SELLER_PHONE = "6282121348660"; // ganti di sini bila perlu
+      const addForm = document.getElementById("addForm");
+      const nameI = document.getElementById("name");
+      const priceI = document.getElementById("price");
+      const qtyI = document.getElementById("qty");
+      const descI = document.getElementById("desc");
+      const imageI = document.getElementById("image");
+      const listingsEl = document.getElementById("listings");
+      const emptyEl = document.getElementById("empty");
+      const addBtn = document.getElementById("addBtn");
+      const clearBtn = document.getElementById("clearBtn");
+
+      function loadListings() {
+        const raw = localStorage.getItem("jualAkun_listings");
+        try {
+          return raw ? JSON.parse(raw) : [];
+        } catch (e) {
+          return [];
+        }
+      }
+
+      function saveListings(list) {
+        localStorage.setItem("jualAkun_listings", JSON.stringify(list));
+      }
+
+      function render() {
+        const list = loadListings();
+        listingsEl.innerHTML = "";
+
+        if (!list.length) {
+          emptyEl.style.display = "block";
+          return;
+        }
+
+        emptyEl.style.display = "none";
+        list.forEach((item, idx) => {
+          const card = document.createElement("div");
+          card.className = "listing";
+          card.innerHTML = `
+            ${item.image ? `
+              <div style="height:130px;background:#f5f7ff;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:8px">
+                <img src='${escapeHtml(item.image)}' alt='' style='max-width:100%;max-height:120px;border-radius:6px' />
+              </div>` : ""}
+            <div style="font-weight:700">${escapeHtml(item.name)}</div>
+            <div class="muted">${escapeHtml(item.desc)}</div>
+            <div class="price">Rp ${numberWithCommas(item.price)} - Stok: ${escapeHtml(item.qty)}</div>
+            <div class="controls">
+              <button class="small" onclick="toWhatsApp(${idx})">Pesan via WhatsApp</button>
+              <button class="small ghost" onclick="editListing(${idx})">Edit</button>
+              <button class="small ghost" onclick="deleteListing(${idx})">Hapus</button>
+            </div>
+          `;
+          listingsEl.appendChild(card);
+        });
+      }
+
+      function escapeHtml(text) {
+        if (!text && text !== 0) return "";
+        return String(text).replace(/[&<>"']/g, (m) => {
+          return {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;",
+          }[m];
+        });
+      }
+
+      function numberWithCommas(x) {
+        x = Number(x) || 0;
+        return x.toLocaleString("id-ID");
+      }
+
+      addBtn.addEventListener("click", () => {
+        const name = nameI.value.trim();
+        const price = priceI.value.trim() || "0";
+        const qty = qtyI.value.trim() || "1";
+        const desc = descI.value.trim();
+        const image = imageI ? imageI.value.trim() : "";
+
+        if (!name || !price) {
+          alert("Isi nama dan harga.");
+          return;
+        }
+
+        const list = loadListings();
+        list.push({ name, price: Number(price), qty, desc, image });
+        saveListings(list);
+
+        nameI.value = "";
+        priceI.value = "5000";
+        qtyI.value = "1";
+        descI.value = "";
+        if (imageI) imageI.value = "";
+
+        render();
+      });
+
+      clearBtn.addEventListener("click", () => {
+        if (!confirm("Hapus semua Harga?")) return;
+        localStorage.removeItem("jualAkun_listings");
+        render();
+      });
+
+      function toWhatsApp(idx) {
+        const list = loadListings();
+        const item = list[idx];
+        const phone = SELLER_PHONE;
+        if (!phone) {
+          alert("Nomor WhatsApp penjual belum diatur.");
+          return;
+        }
+
+        const parts = [];
+        parts.push(`Nama: ${item.name}`);
+        parts.push(`Harga: Rp ${numberWithCommas(item.price)}`);
+        parts.push(`Jumlah: ${item.qty}`);
+        if (item.desc) parts.push(`Keterangan: ${item.desc}`);
+        parts.push("Terima kasih. Saya mau pesan.");
+
+        const text = encodeURIComponent(parts.join("\n"));
+        const url = `https://wa.me/${encodeURIComponent(phone)}?text=${text}`;
+        window.open(url, "_blank");
+      }
+
+      function deleteListing(idx) {
+        const list = loadListings();
+        if (!confirm("Hapus listing ini?")) return;
+        list.splice(idx, 1);
+        saveListings(list);
+        render();
+      }
+
+      function editListing(idx) {
+        const list = loadListings();
+        const item = list[idx];
+        nameI.value = item.name;
+        priceI.value = item.price;
+        qtyI.value = item.qty;
+        descI.value = item.desc;
+        if (imageI) imageI.value = item.image;
+
+        // remove old entry (akan diupdate setelah Tambahkan)
+        list.splice(idx, 1);
+        saveListings(list);
+        render();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      // init default
+      if (!priceI.value) priceI.value = "5000";
+      render();
+    </script>
+  </body>
+</html>
